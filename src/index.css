@@ -1,0 +1,439 @@
+:root {
+  /* 清新明亮主题：白 + 淡蓝 */
+  --bg-main: #f3f7fa; /* 极浅的淡蓝底色 */
+  --panel-bg: #ffffff; /* 纯白卡片背景 */
+  --panel-bg-hover: #f8fafc;
+  --panel-border: #e2e8f0; /* 细浅灰边框 */
+  --panel-border-active: #93c5fd; /* 淡蓝聚焦边框 */
+  
+  --primary-color: #2563eb; /* 蔚蓝色 */
+  --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); /* 天蓝渐变 */
+  --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%); /* 绿色渐变 */
+  --accent-glow: 0 4px 12px rgba(59, 130, 246, 0.12);
+  
+  --text-primary: #1e293b; /* 深色字，保障高对比可读性 */
+  --text-secondary: #475569; /* 次要文字 */
+  --text-muted: #94a3b8; /* 弱文字 */
+  
+  --font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 微信小程序风格卡片 */
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(164, 180, 200, 0.08); /* 浅蓝灰微阴影 */
+}
+
+/* 按钮及输入控件 */
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+  color: inherit;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition-smooth);
+  text-decoration: none;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: #ffffff;
+  box-shadow: var(--accent-glow);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.2);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+.btn-primary:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #eff6ff; /* 浅淡蓝色底 */
+  border: 1px solid #bfdbfe; /* 淡蓝边框 */
+  color: #2563eb; /* 蓝色字 */
+}
+.btn-secondary:hover {
+  background: #dbeafe;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  color: #ffffff;
+}
+.btn-danger:hover {
+  transform: translateY(-1px);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: underline;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+/* ================= 登录/身份选择页布局 ================= */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 1.5rem 1rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.logo-icon {
+  font-size: 3.2rem;
+  margin-block-end: 0.75rem;
+  display: inline-block;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.login-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-block-end: 0.5rem;
+}
+
+.login-desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-block-end: 2rem;
+  line-height: 1.5;
+}
+
+.form-group {
+  margin-block-end: 1.25rem;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-block-end: 0.5rem;
+}
+
+/* ================= 微信导航栏小程序风格头部 ================= */
+.eval-header {
+  padding: 0.85rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #ffffff; /* 微信标准白导航栏 */
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 0.75rem 4rem;
+}
+
+/* 进度条与说明面板 */
+.progress-card {
+  padding: 1rem;
+  margin-block-end: 1rem;
+  background: #ffffff;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-block-end: 0.5rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary-gradient);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+/* 小程序风格的页签 (Tabs) */
+.tabs-container {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
+  padding: 3px;
+  border-radius: 10px;
+  margin-block-end: 1rem;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.65rem 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: var(--transition-smooth);
+  text-align: center;
+}
+
+.tab-btn.active {
+  background: #eff6ff; /* 淡蓝底色高亮 */
+  color: #2563eb; /* 蓝色高亮 */
+}
+
+.tab-badge {
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  color: var(--text-secondary);
+  padding: 1px 5px;
+  border-radius: 99px;
+  margin-inline-start: 4px;
+}
+.tab-btn.active .tab-badge {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+/* ================= 管理员后台 (Admin) ================= */
+.admin-navbar {
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.admin-title-area {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0f172a;
+}
+
+.admin-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #2563eb;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.admin-main {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 860px) {
+  .admin-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-content-card {
+  padding: 1.5rem;
+  min-height: 400px;
+  background: #ffffff;
+}
+
+.panel-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-block-end: 1rem;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 导入区 */
+.import-textarea {
+  width: 100%;
+  height: 150px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-block-end: 0.75rem;
+}
+.import-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #ffffff;
+}
+
+.import-tips {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-block-end: 1rem;
+  padding: 0.75rem;
+  background: #f1f5f9;
+  border-left: 3px solid #3b82f6;
+  border-radius: 4px;
+}
+
+/* 频数导出区域 */
+.export-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-block-end: 1.5rem;
+}
+
+.export-card {
+  padding: 1.25rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f8fafc;
+}
+
+.export-card-icon {
+  font-size: 2rem;
+}
+
+.export-card-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.qr-card {
+  padding: 1.25rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+}
+
+.qr-placeholder {
+  background: #ffffff;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  display: inline-flex;
+}
+
+.visually-hidden {
+  position: absolute;
+  clip-path: inset(50%);
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+}

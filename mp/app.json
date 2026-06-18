@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/eval/eval"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "教师民主评议",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f6f8fc"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,23 @@
+<view class="container">
+  <view class="header">
+    <view class="title" bindlongpress="onConfigIP">教师民主评议系统</view>
+    <view class="subtitle">请选择您的评议人身份进入打分</view>
+  </view>
+
+  <view class="role-selector">
+    <view class="role-btn" hover-class="role-btn-hover" bindtap="selectRole" data-role="教师">
+      教师
+    </view>
+    <view class="role-btn" hover-class="role-btn-hover" bindtap="selectRole" data-role="中层干部">
+      中层干部
+    </view>
+    <view class="role-btn" hover-class="role-btn-hover" bindtap="selectRole" data-role="校级干部">
+      校级干部
+    </view>
+  </view>
+
+  <view class="footer">
+    <text class="ip-info">当前配置服务器: {{serverUrl}}</text>
+    <text class="tip-info">(长按大标题可以重新设置服务器 IP 地址)</text>
+  </view>
+</view>

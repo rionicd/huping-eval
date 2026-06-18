@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+*.key
+.gemini/
+dist/node_modules/
+dist/.DS_Store

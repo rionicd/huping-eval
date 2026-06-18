@@ -1,0 +1,68 @@
+<view class="eval-container">
+  <!-- 提交成功反馈页 -->
+  <view class="success-view" wx:if="{{isSubmitted}}">
+    <icon type="success" size="72" color="#007aff"></icon>
+    <view class="success-title">评分提交成功</view>
+    <view class="success-desc">您的匿名评议问卷已安全上传至系统。</view>
+    <view class="success-actions">
+      <button class="btn-primary" hover-class="btn-primary-hover" bindtap="restartEval">新录一份</button>
+      <button class="btn-secondary" hover-class="btn-secondary-hover" bindtap="goBack">返回首页</button>
+    </view>
+  </view>
+
+  <!-- 评分主表单 -->
+  <view class="form-view" wx:else>
+    <!-- 顶部进度卡片 -->
+    <view class="progress-card">
+      <view class="progress-header">
+        <view class="role-badge">{{raterRole}}身份打分</view>
+        <view class="progress-text">已完成: <text class="highlight">{{ratedCount}}/{{totalCount}}</text></view>
+      </view>
+      <view class="progress-bar-bg">
+        <view class="progress-bar-fill" style="width: {{progressPercentage}}%"></view>
+      </view>
+      <view class="progress-tip">评分说明：总分 100 分制，仅限打 85 - 99 之间的分数。</view>
+    </view>
+
+    <!-- 分类标签 Tab 栏 -->
+    <view class="tab-header">
+      <view wx:for="{{tabs}}" wx:key="type" class="tab-item {{activeTab === item.type ? 'active' : ''}}" bindtap="switchTab" data-type="{{item.type}}">
+        <text>{{item.name}}</text>
+        <view class="tab-badge" wx:if="{{item.unratedCount > 0}}">{{item.unratedCount}}</view>
+      </view>
+    </view>
+
+    <!-- 教师打分列表 -->
+    <view class="teacher-list">
+      <view wx:for="{{filteredTeachers}}" wx:key="id" id="teacher-{{item.id}}" class="teacher-row {{scores[item.id] ? 'completed' : 'pending'}}">
+        <view class="teacher-info">
+          <text class="teacher-index">{{index + 1}}</text>
+          <view class="name-box">
+            <text class="teacher-name">{{item.name}}</text>
+            <text class="teacher-role-tag">{{item.type}}</text>
+          </view>
+        </view>
+
+        <view class="score-picker-wrapper">
+          <picker mode="selector" range="{{scoreRange}}" value="{{scoreIndices[item.id] !== undefined ? scoreIndices[item.id] : -1}}" bindchange="onScoreChange" data-id="{{item.id}}">
+            <view class="score-box {{scores[item.id] ? 'has-score' : 'no-score'}}">
+              <text class="score-val">{{scores[item.id] ? scores[item.id] + ' 分' : '选择分数'}}</text>
+              <text class="score-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="empty-tip" wx:if="{{filteredTeachers.length === 0}}">
+        没有符合该分类的评议教师
+      </view>
+    </view>
+
+    <!-- 底部提交区域 -->
+    <view class="submit-section">
+      <button class="btn-primary btn-submit" hover-class="btn-primary-hover" bindtap="submitScores">
+        提交整卷打分 (匿名)
+      </button>
+    </view>
+  </view>
+</view>
