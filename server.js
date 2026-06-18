@@ -34,15 +34,59 @@ async function initDb() {
   }
 }
 
-// 读取数据库
-async function readDb() {
+// 从本地物理文件读取
+async function readLocalDb() {
   await initDb();
   const data = await fs.readFile(DB_FILE, 'utf-8');
   return JSON.parse(data);
 }
 
+// 读取数据库（支持公网 KV 数据库与本地物理文件双备份）
+async function readDb() {
+  const bucket = process.env.KVDB_BUCKET;
+  if (bucket) {
+    try {
+      const res = await fetch(`https://kvdb.io/${bucket}/db`);
+      if (res.status === 200) {
+        const text = await res.text();
+        return JSON.parse(text);
+      } else if (res.status === 404) {
+        // 云端无数据，使用本地 db.json 初始化种子数据并同步到云端
+        console.log("KVdb key not found. Initializing with local db.json...");
+        const localData = await readLocalDb();
+        await writeDb(localData);
+        return localData;
+      }
+    } catch (err) {
+      console.error("读取云端 KVdb 失败，降级读取本地文件:", err);
+    }
+  }
+  return readLocalDb();
+}
+
 // 写入数据库
 async function writeDb(data) {
+  const bucket = process.env.KVDB_BUCKET;
+  if (bucket) {
+    return new Promise((resolve, reject) => {
+      writeQueue = writeQueue.then(async () => {
+        try {
+          const res = await fetch(`https://kvdb.io/${bucket}/db`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+          });
+          if (res.ok) {
+            resolve();
+          } else {
+            reject(new Error(`KVdb 写入失败，状态码: ${res.status}`));
+          }
+        } catch (err) {
+          reject(err);
+        }
+      });
+    });
+  }
+
   return new Promise((resolve, reject) => {
     writeQueue = writeQueue.then(async () => {
       try {
