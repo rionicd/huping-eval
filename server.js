@@ -261,7 +261,21 @@ app.get('/api/admin/template', (req, res) => {
   }
 });
 
-// 7. 导出统计表接口 (直接返回 CSV，自动计算平均分/最高/最低及频数矩阵)
+// 辅助函数：将数字转换为中文（用于生成 一号打分、二号打分 等列名）
+function toChineseNum(num) {
+  const changeNum = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+  if (num <= 9) return changeNum[num];
+  if (num === 10) return '十';
+  if (num < 20) return '十' + changeNum[num % 10];
+  let str = '';
+  let k = Math.floor(num / 10);
+  let g = num % 10;
+  str += changeNum[k] + '十';
+  if (g !== 0) str += changeNum[g];
+  return str;
+}
+
+// 7. 导出明细与统计表接口
 app.get('/api/admin/export/:type', async (req, res) => {
   const { type } = req.params; // "校级干部" | "中层干部" | "普通教师"
   
@@ -273,72 +287,60 @@ app.get('/api/admin/export/:type', async (req, res) => {
     const db = await readDb();
     const targetTeachers = db.teachers.filter(t => t.type === type);
     const submissions = db.submissions;
-    const { minScore = 85, maxScore = 99 } = db.config || {};
 
-    // 统计名
+    // 统计表名
     let title = "";
-    if (type === "校级干部") title = "校级干部民主评议统计表";
-    else if (type === "中层干部") title = "中层干部民主评议统计表";
-    else title = "教师测评统计表";
+    if (type === "校级干部") title = "校级干部民主评议明细统计表";
+    else if (type === "中层干部") title = "中层干部民主评议明细统计表";
+    else title = "教师测评明细统计表";
 
-    // 频数分布的表头分数列表 (99 到 85 从高到低)
-    const scoreRange = [];
-    for (let s = maxScore; s >= minScore; s--) {
-      scoreRange.push(s);
-    }
+    // 筛选出针对该类型教师有打分数据的有效答卷
+    const targetSubmissions = submissions.filter(sub => 
+      targetTeachers.some(t => sub.scores[t.id] !== undefined && sub.scores[t.id] !== null)
+    );
+    const m = targetSubmissions.length; // 实际打分人数
 
     // 拼装 CSV 头部
     let csvContent = `\ufeff${title}\n`; // UTF-8 BOM 保证 Excel 不乱码
     
-    let headers = ["序号", "被评教师姓名", "有效答卷数", "平均得分", "最高分", "最低分"];
-    scoreRange.forEach(score => {
-      headers.push(`${score}分得票数`);
-    });
+    let headers = ["序号", "被评教师姓名"];
+    for (let i = 1; i <= m; i++) {
+      headers.push(`${toChineseNum(i)}号打分`);
+    }
+    headers.push("平均得分", "最高分", "最低分");
     csvContent += headers.join(",") + "\n";
 
-    // 逐个教师统计
+    // 逐个教师统计明细与汇总
     targetTeachers.forEach((teacher, idx) => {
-      // 提取针对该教师的打分集合 (已作废的问卷不会计入 submissions，所以全是合规的)
-      const scoreList = submissions
-        .map(sub => sub.scores[teacher.id])
-        .filter(v => v !== undefined && v !== null)
-        .map(Number);
-      
-      const votes = scoreList.length;
-      
-      // 平均分、最高分、最低分
+      const row = [idx + 1, teacher.name];
+      const scoreList = [];
+
+      // 提取每份答卷上针对该教师的打分
+      targetSubmissions.forEach(sub => {
+        const val = sub.scores[teacher.id];
+        if (val !== undefined && val !== null) {
+          const numVal = Number(val);
+          row.push(numVal);
+          scoreList.push(numVal);
+        } else {
+          row.push(""); // 没有评分填空
+        }
+      });
+
+      // 计算平均分、最高分、最低分
       let avg = "0.00";
       let max = 0;
       let min = 0;
 
-      if (votes > 0) {
+      if (scoreList.length > 0) {
         const sum = scoreList.reduce((acc, curr) => acc + curr, 0);
-        avg = (sum / votes).toFixed(2);
+        avg = (sum / scoreList.length).toFixed(2);
         max = Math.max(...scoreList);
         min = Math.min(...scoreList);
+        row.push(avg, max, min);
+      } else {
+        row.push("0.00", "", "");
       }
-
-      // 各分数的得票频数统计
-      const freqMap = {};
-      scoreRange.forEach(s => { freqMap[s] = 0; });
-      scoreList.forEach(s => {
-        if (freqMap[s] !== undefined) {
-          freqMap[s] += 1;
-        }
-      });
-
-      // 组装行数据
-      let row = [
-        idx + 1,
-        teacher.name,
-        votes,
-        avg,
-        max,
-        min
-      ];
-      scoreRange.forEach(s => {
-        row.push(freqMap[s]);
-      });
 
       csvContent += row.join(",") + "\n";
     });

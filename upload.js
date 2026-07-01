@@ -17,8 +17,8 @@ const __dirname = path.dirname(__filename);
   console.log('开始编译并上传小程序...');
   const uploadResult = await ci.upload({
     project,
-    version: '1.0.0',
-    desc: '教师互评系统原生小程序白蓝版',
+    version: '1.0.1',
+    desc: '教师互评系统直连云托管免备案版',
     setting: {
       es6: true,
       minify: true,
