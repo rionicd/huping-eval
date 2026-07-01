@@ -24,6 +24,24 @@
       <view class="progress-tip">评分说明：总分 100 分制，仅限打 85 - 99 之间的分数。</view>
     </view>
 
+    <!-- 一键全员快速赋分 -->
+    <view class="progress-card" style="margin-top: 16rpx; padding: 20rpx 30rpx;">
+      <view style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        <view style="display: flex; align-items: center; font-size: 28rpx; font-weight: bold; color: #333;">
+          <text style="margin-right: 8rpx; font-size: 32rpx;">⚡</text>
+          <text>一键快速打总分</text>
+        </view>
+        <picker mode="selector" range="{{scoreRange}}" bindchange="onBatchScore">
+          <view style="background: #e1f0ff; color: #007aff; font-size: 26rpx; padding: 10rpx 24rpx; border-radius: 8px; font-weight: bold;">
+            选择分数 ▼
+          </view>
+        </picker>
+      </view>
+      <view style="font-size: 22rpx; color: #888; margin-top: 8rpx; line-height: 1.4;">
+        提示：一键赋分后，您依然可以针对单个教师单独滑动下拉框进行微调评分。
+      </view>
+    </view>
+
     <!-- 分类标签 Tab 栏 -->
     <view class="tab-header">
       <view wx:for="{{tabs}}" wx:key="type" class="tab-item {{activeTab === item.type ? 'active' : ''}}" bindtap="switchTab" data-type="{{item.type}}">

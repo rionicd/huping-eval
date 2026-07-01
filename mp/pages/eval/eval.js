@@ -141,6 +141,40 @@ Page({
     this.updateTabAndFilter();
   },
 
+  // 一键全员快速赋分
+  onBatchScore(e) {
+    const selectIndex = parseInt(e.detail.value, 10);
+    const score = parseInt(this.data.scoreRange[selectIndex], 10);
+
+    wx.showModal({
+      title: '提示',
+      content: `确定要将当前所有 ${this.data.totalCount} 位教师的评分一键设置为 ${score} 分吗？(已有的打分会被覆盖)`,
+      success: (res) => {
+        if (res.confirm) {
+          const scores = {};
+          const scoreIndices = {};
+          this.data.teachers.forEach(t => {
+            scores[t.id] = score;
+            scoreIndices[t.id] = selectIndex;
+          });
+
+          this.setData({
+            scores,
+            scoreIndices
+          });
+
+          this.updateProgress();
+          this.updateTabAndFilter();
+
+          wx.showToast({
+            title: `全员已设为${score}分`,
+            icon: 'success'
+          });
+        }
+      }
+    });
+  },
+
   // 计算并更新打分进度
   updateProgress() {
     const scores = this.data.scores;
