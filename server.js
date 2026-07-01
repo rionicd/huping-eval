@@ -9,7 +9,8 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5050;
-const DB_FILE = path.join(__dirname, 'db.json');
+const DB_DIR = process.env.DATA_DIR || __dirname;
+const DB_FILE = path.join(DB_DIR, 'db.json');
 
 app.use(cors());
 app.use(express.json());
@@ -19,6 +20,7 @@ let writeQueue = Promise.resolve();
 // 初始化数据库
 async function initDb() {
   try {
+    await fs.mkdir(DB_DIR, { recursive: true });
     await fs.access(DB_FILE);
   } catch {
     const defaultData = {
