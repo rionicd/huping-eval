@@ -30,11 +30,10 @@ Page({
 
   // 获取教师列表
   fetchTeachers() {
-    const serverUrl = app.globalData.serverUrl;
     wx.showLoading({ title: '加载中...' });
 
-    wx.request({
-      url: `${serverUrl}/api/teachers`,
+    app.request({
+      url: '/api/teachers',
       method: 'GET',
       success: (res) => {
         wx.hideLoading();
@@ -52,7 +51,7 @@ Page({
         wx.hideLoading();
         wx.showModal({
           title: '连接失败',
-          content: '无法连接到服务器。请确认您手机和服务器处于同一局域网内，且在首页长按配置了正确的 IP 端口。',
+          content: '连接服务器失败。请确认微信云托管已成功发布为运行中状态，或者您已在首页长按彩蛋配置了正确的内网 IP 端口。',
           showCancel: false
         });
         console.error(err);
@@ -233,11 +232,10 @@ Page({
     }
 
     // 通过全部本地校验，发送请求
-    const serverUrl = app.globalData.serverUrl;
     wx.showLoading({ title: '提交中...' });
 
-    wx.request({
-      url: `${serverUrl}/api/submissions`,
+    app.request({
+      url: '/api/submissions',
       method: 'POST',
       data: {
         role: raterRole,
