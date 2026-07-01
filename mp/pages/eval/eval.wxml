@@ -25,7 +25,7 @@
     </view>
 
     <!-- 一键全员快速赋分 -->
-    <view class="progress-card" style="margin-top: 16rpx; padding: 20rpx 30rpx;">
+    <view class="progress-card" wx:if="{{enableBatchScore}}" style="margin-top: 16rpx; padding: 20rpx 30rpx;">
       <view style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
         <view style="display: flex; align-items: center; font-size: 28rpx; font-weight: bold; color: #333;">
           <text style="margin-right: 8rpx; font-size: 32rpx;">⚡</text>

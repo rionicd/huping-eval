@@ -6,7 +6,8 @@
       "良好": 85,
       "合格": 70,
       "不合格": 50
-    }
+    },
+    "enableBatchScore": false
   },
   "teachers": [
     {

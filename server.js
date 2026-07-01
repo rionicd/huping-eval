@@ -27,7 +27,8 @@ async function initDb() {
       config: {
         adminPassword: "admin",
         minScore: 85,
-        maxScore: 99
+        maxScore: 99,
+        enableBatchScore: true
       },
       teachers: [],
       submissions: [] // 匿名提交记录
@@ -105,6 +106,37 @@ async function writeDb(data) {
 await initDb();
 
 // ================= API 路由 =================
+
+// 0. 获取当前评分配置项（包含是否开启一键打分）
+app.get('/api/config', async (req, res) => {
+  try {
+    const db = await readDb();
+    res.json(db.config || { minScore: 85, maxScore: 99, enableBatchScore: true });
+  } catch (error) {
+    res.status(500).json({ message: "获取配置失败", error: error.message });
+  }
+});
+
+// 0.5. 修改全局配置（供管理员面板调用）
+app.post('/api/admin/config', async (req, res) => {
+  const { minScore, maxScore, enableBatchScore, adminPassword } = req.body;
+  try {
+    const db = await readDb();
+    if (!db.config) {
+      db.config = { minScore: 85, maxScore: 99, enableBatchScore: true, adminPassword: "admin" };
+    }
+    
+    if (minScore !== undefined) db.config.minScore = parseInt(minScore, 10);
+    if (maxScore !== undefined) db.config.maxScore = parseInt(maxScore, 10);
+    if (enableBatchScore !== undefined) db.config.enableBatchScore = !!enableBatchScore;
+    if (adminPassword !== undefined) db.config.adminPassword = adminPassword;
+    
+    await writeDb(db);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: "修改配置失败", error: error.message });
+  }
+});
 
 // 1. 获取教师列表
 app.get('/api/teachers', async (req, res) => {

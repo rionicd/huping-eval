@@ -17,7 +17,8 @@ Page({
     ratedCount: 0,
     totalCount: 0,
     progressPercentage: 0,
-    isSubmitted: false
+    isSubmitted: false,
+    enableBatchScore: true
   },
 
   onLoad(options) {
@@ -25,7 +26,23 @@ Page({
     this.setData({
       raterRole: role
     });
+    this.fetchConfig();
     this.fetchTeachers();
+  },
+
+  // 获取评分控制配置
+  fetchConfig() {
+    app.request({
+      url: '/api/config',
+      method: 'GET',
+      success: (res) => {
+        if (res.statusCode === 200) {
+          this.setData({
+            enableBatchScore: res.data.enableBatchScore !== false
+          });
+        }
+      }
+    });
   },
 
   // 获取教师列表

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Evaluation({ teachers, role, onResetRole, onEnterAdmin }) {
   // 根据身份决定允许展示的 Tab 页签
@@ -13,6 +13,23 @@ export default function Evaluation({ teachers, role, onResetRole, onEnterAdmin }
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [enableBatchScore, setEnableBatchScore] = useState(true);
+
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  const fetchConfig = async () => {
+    try {
+      const res = await fetch('/api/config');
+      if (res.ok) {
+        const data = await res.json();
+        setEnableBatchScore(data.enableBatchScore !== false);
+      }
+    } catch (err) {
+      console.error("加载配置失败:", err);
+    }
+  };
 
   // 下拉选择改变分值
   const handleInputChange = (teacherId, valStr) => {
@@ -246,45 +263,47 @@ export default function Evaluation({ teachers, role, onResetRole, onEnterAdmin }
         </section>
 
         {/* 一键全员快速赋分 */}
-        <section className="progress-card glass-panel" style={{ marginTop: '-0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '1.15rem' }}>⚡</span>
-              <span style={{ fontWeight: '600', fontSize: '0.88rem', color: 'var(--text-primary)' }}>一键快速打总分</span>
+        {enableBatchScore && (
+          <section className="progress-card glass-panel" style={{ marginTop: '-0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '1.15rem' }}>⚡</span>
+                <span style={{ fontWeight: '600', fontSize: '0.88rem', color: 'var(--text-primary)' }}>一键快速打总分</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <select 
+                  defaultValue="" 
+                  style={{ 
+                    padding: '0.45rem 0.8rem', 
+                    borderRadius: '8px', 
+                    border: '1px solid var(--border-color)', 
+                    backgroundColor: 'var(--bg-card)', 
+                    color: 'var(--text-primary)',
+                    fontSize: '0.85rem',
+                    outline: 'none',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    cursor: 'pointer'
+                  }}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value, 10);
+                    if (!isNaN(val)) {
+                      handleBatchScore(val);
+                      e.target.value = ""; // 赋值后重置
+                    }
+                  }}
+                >
+                  <option value="" disabled>-- 快速赋分 --</option>
+                  {Array.from({ length: 15 }, (_, i) => 99 - i).map(num => (
+                    <option key={num} value={num}>{num} 分</option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <select 
-                defaultValue="" 
-                style={{ 
-                  padding: '0.45rem 0.8rem', 
-                  borderRadius: '8px', 
-                  border: '1px solid var(--border-color)', 
-                  backgroundColor: 'var(--bg-card)', 
-                  color: 'var(--text-primary)',
-                  fontSize: '0.85rem',
-                  outline: 'none',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                  cursor: 'pointer'
-                }}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10);
-                  if (!isNaN(val)) {
-                    handleBatchScore(val);
-                    e.target.value = ""; // 赋值后重置
-                  }
-                }}
-              >
-                <option value="" disabled>-- 快速赋分 --</option>
-                {Array.from({ length: 15 }, (_, i) => 99 - i).map(num => (
-                  <option key={num} value={num}>{num} 分</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.5rem', textAlign: 'left', lineHeight: '1.4' }}>
-            提示：一键赋分后，您依然可以针对单个教师单独滑动下拉框进行微调。
-          </p>
-        </section>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.5rem', textAlign: 'left', lineHeight: '1.4' }}>
+              提示：一键赋分后，您依然可以针对单个教师单独滑动下拉框进行微调评分。
+            </p>
+          </section>
+        )}
 
         {/* 页签 */}
         <nav className="tabs-container" aria-label="被评干部及教师页签">

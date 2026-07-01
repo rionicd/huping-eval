@@ -8,13 +8,48 @@ export default function Admin({ onLogout, onRefreshTeachers }) {
   const [importText, setImportText] = useState('');
   const [loadingProgress, setLoadingProgress] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [enableBatchScore, setEnableBatchScore] = useState(true);
 
   useEffect(() => {
     if (sessionStorage.getItem('admin_verified') === 'true') {
       setIsVerified(true);
       fetchProgress();
+      fetchConfig();
     }
   }, []);
+
+  const fetchConfig = async () => {
+    try {
+      const res = await fetch('/api/config');
+      if (res.ok) {
+        const data = await res.json();
+        setEnableBatchScore(data.enableBatchScore !== false);
+      }
+    } catch (err) {
+      console.error("加载全局配置失败:", err);
+    }
+  };
+
+  const handleToggleBatchScore = async (e) => {
+    const newVal = e.target.checked;
+    setEnableBatchScore(newVal);
+    try {
+      const res = await fetch('/api/admin/config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ enableBatchScore: newVal })
+      });
+      if (!res.ok) {
+        alert("保存系统配置失败");
+        setEnableBatchScore(!newVal);
+      }
+    } catch (err) {
+      alert("保存配置发生网络错误");
+      setEnableBatchScore(!newVal);
+    }
+  };
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -292,6 +327,23 @@ export default function Admin({ onLogout, onRefreshTeachers }) {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* 系统配置 */}
+          <div className="glass-panel" style={{ padding: '1.5rem', textAlign: 'left' }}>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: '700', marginBottom: '1rem' }}>⚙️ 评分选项配置</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>启用教师端“一键打总分”</span>
+              <input 
+                type="checkbox" 
+                checked={enableBatchScore} 
+                onChange={handleToggleBatchScore}
+                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              />
+            </div>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.5rem', lineHeight: '1.4' }}>
+              关闭后，打分人手机端的“一键快速打总分”卡片将被隐藏，老师们必须逐个拉动滚轮进行打分。
+            </p>
           </div>
 
           {/* 系统操作 */}
