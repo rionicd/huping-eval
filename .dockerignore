@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+dist
+mp
+.git
+.gitignore
+.DS_Store
+*.md
+private.wxf06cb4ac3d035efd.key
+upload.js
+Dockerfile
+.dockerignore
